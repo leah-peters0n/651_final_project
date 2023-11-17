@@ -1,0 +1,85 @@
+---
+title: "Final Project"
+author: "Danielle Jones & Katie Perez"
+format: html
+editor: visual
+  highlight-style: pygments
+syntax: tango
+execute: 
+  echo: true
+  message: false
+  warning: false
+fig-width: 9
+fig-height: 7
+bibliography: references.bib
+link-citations: true
+---
+
+# Load libraries
+
+```{r}
+library(here)
+library(rio)
+library(tidyverse)
+library(janitor)
+library(ggthemes)
+library(gghighlight)
+library(fivethirtyeight)
+library(ggridges)
+library(mdsr)
+library(tidyr)
+library(lubridate)
+
+
+```
+
+# Load data
+```{r}
+here("data", "Olympic_Swimming_Results_1912to2020.csv")
+
+olyswim <- read_csv(here("data", "Olympic_Swimming_Results_1912to2020.csv")) %>%
+  characterize() %>%
+  clean_names()
+
+
+```
+
+```{r}
+olyswim %>%
+  mutate(secondsonly = str_detect(results, "^[^.:\r\n]*$"),
+         secmilisec = str_detect(results, "^[^.\r\n]*\.[^.\r\n]*$"),
+         str_detect()) %>% View()
+```
+
+
+
+# Cleaning/organizing data
+```{r}
+olyswim <- olyswim %>%
+  filter(year >= 1919, year <=2020,
+         relay == 0, rank != 0, rank !=4, rank !=5) %>%
+  select(-location, -relay) %>%
+  mutate(distance_in_meters = parse_number(distance_in_meters),
+         foo = lubridate::hms(results)
+         
+         
+         
+         # results_minute = gsub("(\\d)(:.*)", "\\1", results),
+         # results_second = gsub("(\\d:)(.*)", "\\2", results)
+         )
+  
+
+  
+```
+
+# Creating gender and stroke dataframe
+```{r}
+olyswimgenderstroke <- olyswim %>%
+  group_by(gender, stroke) %>%
+  summarise(mean_time = mean(results))
+
+summarize(olyswimgenderstroke)
+```
+
+```
+
